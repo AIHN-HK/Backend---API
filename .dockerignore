@@ -13,5 +13,6 @@ README.md
 .idea
 coverage
 test-artifacts
+storage
 .nyc_output
 *.log

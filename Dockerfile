@@ -46,7 +46,9 @@ ENV NODE_ENV=production
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001
+    adduser -S nestjs -u 1001 && \
+    mkdir -p /app/storage && \
+    chown nestjs:nodejs /app/storage
 
 # Set ownership during copy instead of duplicating dependency layers with chown.
 COPY --chown=nestjs:nodejs --from=build /app/dist ./dist

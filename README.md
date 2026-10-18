@@ -192,3 +192,26 @@ Cross-module source imports use `src/modules/<module>/index.ts` (relative import
 `pnpm run check` runs normal typecheck, scoped strict typecheck, the dependency gate, lint, tests and build. `pnpm run check:architecture` resolves aliases/relative imports/re-exports through TypeScript and checks actual emitted JS for runtime cycles; erased/type-only cycles are reported separately. Dynamic computed dependencies fail the gate. It covers non-spec TypeScript source in `src`, with no dependency exceptions. The checker emits to memory.
 
 `pnpm run typecheck:strict` enables noImplicitAny/strictNullChecks for the refactored assessment/audit/admin/chat source and its full imported dependency closure. Other root files and tests retain the baseline typecheck settings; the repository is not globally strict. Explicit any is forbidden by lint in those refactored modules except specs. strictBindCallApply, casing and switch-fallthrough checks apply globally.
+# Ảnh đại diện local
+
+Màn `/career-profile` cho phép chọn, xem trước và chủ động lưu ảnh đại diện.
+`PUT /api/v1/users/me/avatar` nhận multipart field `avatar`; `GET` cùng URL trả ảnh
+WebP của tài khoản JWT hiện tại, hoặc 404 khi chưa có ảnh. Cả hai yêu cầu đăng nhập;
+không nhận userId/đường dẫn từ client và không phục vụ công khai thư mục storage.
+
+Chấp nhận JPG/PNG/WebP tĩnh, tối đa 5 MiB và 16 triệu pixel đầu vào. Server giải mã,
+xoay theo hướng ảnh rồi căn giữa 512×512, xuất WebP đã bỏ metadata. File lưu tại
+`storage/avatars/<userId>.webp` tính từ thư mục làm việc Backend; local là
+`/home/hoang/do-an/Backend/storage/avatars`. Thay ảnh dùng file tạm và atomic rename
+để giữ ảnh cũ nếu ghi thất bại. Không cần migration DB. Ảnh upload được ignore khỏi
+Git và Docker build context; khi chạy container cần mount volume bền vững tại
+`/app/storage` với quyền ghi cho UID1001 để giữ ảnh qua lần tạo lại container.
+
+Ảnh mới chỉ được lưu khi bấm **Lưu ảnh đại diện**, độc lập với **Lưu cập nhật** của
+các trường hồ sơ. Khi timeout/kết quả chưa rõ, kiểm tra ảnh đã lưu trước khi thử lại.
+
+Kiểm tra: `pnpm run test:profile` (bao gồm upload, định dạng/dung lượng, ownership,
+ảnh lỗi/ảnh động/pixel quá lớn, normalize và disk persistence).
+Tham khảo [NestJS uploads](https://docs.nestjs.com/techniques/file-upload),
+[Sharp input limits](https://sharp.pixelplumbing.com/api-constructor/) và
+[Sharp resize](https://sharp.pixelplumbing.com/api-resize/).

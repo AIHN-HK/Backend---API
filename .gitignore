@@ -39,6 +39,10 @@ Thumbs.db
 .eslintcache
 *.tsbuildinfo
 
+# Account uploads are runtime data.
+/storage/*
+!/storage/.gitkeep
+
 # Project documentation and local tooling
 /docs/
 /.serena/
