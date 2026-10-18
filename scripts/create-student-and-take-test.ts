@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { Gender } from '../src/modules/users/dto/update-user.dto';
 
 const API_BASE = process.env.API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -9,7 +10,7 @@ interface StudentInfo {
   password: string;
   class: number;
   yob: Date;
-  gender: string;
+  gender: Gender;
   phone: string;
   address: string;
 }
@@ -20,7 +21,7 @@ const defaultStudent: StudentInfo = {
   password: 'Student@123456',
   class: 12,
   yob: new Date('2008-04-15T00:00:00.000Z'),
-  gender: 'Nam',
+  gender: Gender.MALE,
   phone: '0987654321',
   address: 'Hà Nội, Việt Nam',
 };

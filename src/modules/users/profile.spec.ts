@@ -20,7 +20,7 @@ describe('profile HTTP contract', () => {
   const valid = { fullname: 'Student', phone: '0901234567' };
   beforeAll(async () => {
     const users = new Map(
-      [1, 2].map((id) => [
+      [1, 2, 3].map((id) => [
         id,
         {
           id,
@@ -29,7 +29,7 @@ describe('profile HTTP contract', () => {
           role: 'USER',
           password: 'secret',
           yob: new Date('2009-01-01'),
-          gender: null,
+          gender: id === 3 ? 'Nam' : null,
           class: null,
           address: null,
         },
@@ -89,6 +89,14 @@ describe('profile HTTP contract', () => {
       .get('/api/v1/users/1oops')
       .auth(token(1), { type: 'bearer' })
       .expect(400);
+  });
+  it('returns the documented gender enum for a legacy stored profile', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/users/me')
+      .auth(token(3), { type: 'bearer' })
+      .expect(200);
+
+    expect(response.body.data.gender).toBe('MALE');
   });
   it('updates only JWT owner, trims, clears optional values and reloads', async () => {
     const res = await request(app.getHttpServer())
